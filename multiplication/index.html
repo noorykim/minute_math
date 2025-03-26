@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Math Worksheet Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: Helvetica, sans-serif; }
+        button { padding: 10px 20px; font-size: 16px; }
+        label { margin-right: 10px; }
+        input { width: 60px; margin-right: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Generate Multiplication Worksheet</h1>
+    <div>
+        <label for="minValue">Min Value:</label>
+        <input type="number" id="minValue" value="1">
+        <label for="maxValue">Max Value:</label>
+        <input type="number" id="maxValue" value="12">
+    </div>
+    <button onclick="generateWorksheet()">Download Worksheet</button>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        function generateProblemWithAnswer(min, max) {
+            let a = Math.floor(Math.random() * (max - min + 1)) + min;
+            let b = Math.floor(Math.random() * (max - min + 1)) + min;
+            return { prob: [a, '×', b], ans: a * b };
+        }
+
+        function generateWorksheet() {
+            // Get user input
+            const minValue = parseInt(document.getElementById("minValue").value);
+            const maxValue = parseInt(document.getElementById("maxValue").value);
+
+            // Validate input
+            if (isNaN(minValue) || isNaN(maxValue) || minValue >= maxValue) {
+                alert("Please enter valid numbers with Min < Max.");
+                return;
+            }
+
+            // Generate 20 problems
+            const problems = Array.from({ length: 25 }, () => generateProblemWithAnswer(minValue, maxValue));
+
+            // Create PDF
+            const doc = new jsPDF();
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+            const cols = 5;
+            const colWidth = 40;
+            const rightEdges = Array.from({ length: cols }, (_, i) => 30 + i * colWidth);
+            const problemsPerCol = 5;
+
+            // Page 1: Worksheet with header
+            doc.setFont("Helvetica");
+            doc.setFontSize(12);
+            // Header
+            doc.text("Name:", 30, 15);
+            doc.line(50, 17, 100, 17); // Underline for name
+            doc.text("Date:", 110, 15);
+            doc.line(130, 17, 180, 17); // Underline for date
+            doc.text(`Multiplication Worksheet (Min: ${minValue}, Max: ${maxValue})`, 30, 30);
+
+            for (let col = 0; col < cols; col++) {
+                let y = 50;
+                for (let i = 0; i < problemsPerCol; i++) {
+                    const idx = col * problemsPerCol + i;
+                    if (idx >= problems.length) break;
+                    const [a, op, b] = problems[idx].prob;
+                    const x = rightEdges[col];
+                    const aStr = String(a).padStart(3, ' ');
+                    const bStr = `${op} ${String(b).padStart(2, ' ')}`;
+                    doc.text(aStr, x, y, { align: "right" });
+                    doc.text(bStr, x, y + 5, { align: "right" });
+                    doc.line(x - 10, y + 10, x, y + 10);
+                    y += 40; // 5pt problem + 40pt (4 blank lines)
+                }
+            }
+
+            // Page 2: Answer Key with header
+            doc.addPage();
+            doc.setFont("Helvetica");
+            doc.setFontSize(12);
+            // Header
+            doc.text("Name:", 30, 15);
+            doc.line(50, 17, 100, 17); // Underline for name
+            doc.text("Date:", 110, 15);
+            doc.line(130, 17, 180, 17); // Underline for date
+            doc.text(`Answer Key (Vertical Form, ${minValue}-${maxValue})`, 30, 30);
+
+            for (let col = 0; col < cols; col++) {
+                let y = 50;
+                for (let i = 0; i < problemsPerCol; i++) {
+                    const idx = col * problemsPerCol + i;
+                    if (idx >= problems.length) break;
+                    const [a, op, b] = problems[idx].prob;
+                    const ans = problems[idx].ans;
+                    const x = rightEdges[col];
+                    const aStr = String(a).padStart(3, ' ');
+                    const bStr = `${op} ${String(b).padStart(2, ' ')}`;
+                    const ansStr = String(ans).padStart(3, ' ');
+                    doc.text(aStr, x, y, { align: "right" });
+                    doc.text(bStr, x, y + 5, { align: "right" });
+                    doc.line(x - 10, y + 10, x, y + 10);
+                    doc.text(ansStr, x, y + 15, { align: "right" });
+                    y += 45; // 10pt problem + answer + 35pt (4 blank lines)
+                }
+            }
+
+            // Save PDF
+            doc.save("multiplication_worksheet.pdf");
+        }
+    </script>
+</body>
+</html>
