@@ -6,6 +6,8 @@ The program also generates an answer key on a separate page.
 
 For multiplication, the default setting generates problems for times tables from 1x1 up to 12x12, but you can change the min and max values.
 
+https://noorykim.github.io/minute_math/multiplication/index.html
+
 The worksheets are not flashy, but neither is arithmetic. Still, you could make a game of it by seeing how fast and accurately they can complete them and award prizes. (I would emphasize accuracy over speed.)
 I had worksheets like this in elementary school, where we were given a badge if we got 40 problems right out of 40 within 60 seconds, and we got our names posted on a board near the school entrance.
 These worksheets have 25 problems per page, and completing them in a minute is possible with practice.
